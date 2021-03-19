@@ -143,6 +143,7 @@ public class RandomInitialPlan {
     public void createJoinOp() {
         BitSet bitCList = new BitSet(numJoin);
         int jnnum = RandNumb.randInt(0, numJoin - 1);
+        jnnum=0;
         Join jn = null;
 
         /** Repeat until all the join conditions are considered **/
@@ -152,6 +153,7 @@ public class RandomInitialPlan {
              **/
             while (bitCList.get(jnnum)) {
                 jnnum = RandNumb.randInt(0, numJoin - 1);
+//                jnnum = jnnum + 1;
             }
             Condition cn = (Condition) joinlist.get(jnnum);
             String lefttab = cn.getLhs().getTabName();

@@ -117,7 +117,7 @@ public class RandomOptimizer {
         // Randomly select a node to be altered to get the neighbour
         int nodeNum = RandNumb.randInt(0, numJoin - 1);
         // Randomly select type of alteration: Change Method/Associative/Commutative
-        int changeType = RandNumb.randInt(0, NUMCHOICES - 1);
+        int changeType = RandNumb.randInt(1, NUMCHOICES - 1);
         Operator neighbor = null;
         switch (changeType) {
             case METHODCHOICE:   // Select a neighbour by changing the method type
@@ -150,6 +150,7 @@ public class RandomOptimizer {
         } else {
             NUMITER = 1;
         }
+        NUMITER = 1;
 
         /** Randomly restart the gradient descent until
          *  the maximum specified number of random restarts (NUMITER)
@@ -167,59 +168,71 @@ public class RandomOptimizer {
             boolean flag = true;
             long minNeighborCost = initCost;   //just initialization purpose;
             Operator minNeighbor = initPlan;  //just initialization purpose;
-            if (numJoin != 0) {
-                while (flag) {  // flag = false when local minimum is reached
-                    System.out.println("---------------while--------");
-                    Operator initPlanCopy = (Operator) initPlan.clone();
-                    minNeighbor = getNeighbor(initPlanCopy);
-
-                    System.out.println("--------------------------neighbor---------------");
-                    Debug.PPrint(minNeighbor);
-                    pc = new PlanCost();
-                    minNeighborCost = pc.getCost(minNeighbor);
-                    System.out.println("  " + minNeighborCost);
-
-                    /** In this loop we consider from the
-                     ** possible neighbors (randomly selected)
-                     ** and take the minimum among for next step
-                     **/
-                    for (int i = 1; i < 2 * numJoin; ++i) {
-                        initPlanCopy = (Operator) initPlan.clone();
-                        Operator neighbor = getNeighbor(initPlanCopy);
-                        System.out.println("------------------neighbor--------------");
-                        Debug.PPrint(neighbor);
-                        pc = new PlanCost();
-                        long neighborCost = 0;
-                        try {
-                            neighborCost = pc.getCost(neighbor);
-                        } catch (Exception e) {
-                            System.out.println("fatal error.");
-                            System.exit(0);
-                        }
-                        System.out.println(neighborCost);
-
-                        if (neighborCost < minNeighborCost) {
-                            minNeighbor = neighbor;
-                            minNeighborCost = neighborCost;
-                        }
-                    }
-                    if (minNeighborCost < initCost) {
-                        initPlan = minNeighbor;
-                        initCost = minNeighborCost;
-                    } else {
-                        minNeighbor = initPlan;
-                        minNeighborCost = initCost;
-                        flag = false;  // local minimum reached
-                    }
-                }
-                System.out.println("------------------local minimum--------------");
-                Debug.PPrint(minNeighbor);
-                System.out.println(" " + minNeighborCost);
-            }
-            if (minNeighborCost < MINCOST) {
-                MINCOST = minNeighborCost;
-                finalPlan = minNeighbor;
-            }
+//            neighborAssoc(minNeighbor, 1);
+//            neighborCommut(minNeighbor, 0);
+            
+            Debug.PPrint(initPlan);
+            System.out.println(new PlanCost().getCost(initPlan));
+           
+            System.out.println("---initial plan bitch---");
+            Debug.PPrint(initPlan);
+            System.out.println(new PlanCost().getCost(initPlan));
+            finalPlan = initPlan;
+            
+//            if (numJoin != 0) {
+//                while (flag) {  // flag = false when local minimum is reached
+//                    System.out.println("---------------while--------");
+//                    Operator initPlanCopy = (Operator) initPlan.clone();
+//                    minNeighbor = getNeighbor(initPlanCopy);
+//
+//                    System.out.println("--------------------------neighbor---------------");
+//                    Debug.PPrint(minNeighbor);
+//                    pc = new PlanCost();
+//                    minNeighborCost = pc.getCost(minNeighbor);
+//                    System.out.println("  " + minNeighborCost);
+//
+//                    /** In this loop we consider from the
+//                     ** possible neighbors (randomly selected)
+//                     ** and take the minimum among for next step
+//                     **/
+//                    for (int i = 1; i < 2 * numJoin; ++i) {
+//                        initPlanCopy = (Operator) initPlan.clone();
+//                        Operator neighbor = getNeighbor(initPlanCopy);
+//                        System.out.println("------------------neighbor--------------");
+//                        Debug.PPrint(neighbor);
+//                        pc = new PlanCost();
+//                        long neighborCost = 0;
+//                        try {
+//                            neighborCost = pc.getCost(neighbor);
+//                        } catch (Exception e) {
+//                            System.out.println("fatal error.");
+//                            System.exit(0);
+//                        }
+//                        System.out.println(neighborCost);
+//
+//                        if (neighborCost < minNeighborCost) {
+//                            minNeighbor = neighbor;
+//                            minNeighborCost = neighborCost;
+//                        }
+//                    }
+//                    if (minNeighborCost < initCost) {
+//                        initPlan = minNeighbor;
+//                        initCost = minNeighborCost;
+//                    } else {
+//                        minNeighbor = initPlan;
+//                        minNeighborCost = initCost;
+//                        flag = false;  // local minimum reached
+//                    }
+//                }
+//                System.out.println("------------------local minimum--------------");
+//                Debug.PPrint(minNeighbor);
+//                System.out.println(" " + minNeighborCost);
+//            }
+//    		
+//            if (minNeighborCost < MINCOST) {
+//                MINCOST = minNeighborCost;
+//                finalPlan = minNeighbor;
+//            }
         }
         System.out.println("\n\n\n");
         System.out.println("---------------------------Final Plan----------------");
@@ -284,10 +297,10 @@ public class RandomOptimizer {
         } else if (left.getOpType() != OpType.JOIN && right.getOpType() == OpType.JOIN) {
             transformRighttoLeft(op, (Join) right);
         } else if (left.getOpType() == OpType.JOIN && right.getOpType() == OpType.JOIN) {
-            if (RandNumb.flipCoin())
-                transformLefttoRight(op, (Join) left);
-            else
-                transformRighttoLeft(op, (Join) right);
+//            if (RandNumb.flipCoin())
+//                transformLefttoRight(op, (Join) left);
+//            else
+//                transformRighttoLeft(op, (Join) right);
         } else {
             // The join is just A X B,  therefore Association rule is not applicable
         }
